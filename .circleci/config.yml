@@ -1,0 +1,77 @@
+version: 2
+jobs:
+  deploy:
+    docker:
+    - image: amardomingo/terraform:latest
+    steps:
+      - checkout
+      - run:
+          name: Get Google Cloud Dredentials
+          command: make credentials
+      - run:
+          name: Create enfironment demo
+          command: make deploy env=demo
+      - persist_to_workspace:
+          root: .
+          paths:
+            - credentials
+  test:
+    docker:
+      - image: amardomingo/terraform:latest
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Test the environment is deployed
+          command: |
+            LB_IP=$(make deploy env=demo | perl -lne 'print $1 if /LB IP: ([\d+\.]+)/')
+            for i in `seq 60` ; do
+              http_status=$(curl -o /dev/null -w '%{http_code}' $LB_IP 2>/dev/null)
+              if [[ $? -gt 0 ]] || [[ $http_status -ne 200 ]] ; then
+                echo "LB is not ready after ${i}0 seconds"
+                sleep 10
+              else
+                echo "Success!!"
+                echo "LB is ready"
+                exit 0
+              fi
+            done
+            echo "Test failed!"
+            echo "LB was not ready on time."
+            exit 1
+  destroy:
+    docker:
+    - image: amardomingo/terraform:latest
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Destroy enfironment demo
+          command: make destroy env=demo
+
+workflows:
+  version: 2
+  deploy_test_destroy:
+    jobs:
+      - deploy:
+          context: terraform
+          filters:
+            tags:
+              only: /.*/ 
+      - test:
+          context: terraform
+          requires:
+            - deploy
+          filters:
+            tags:
+              only: /.*/
+      # Build Docker Image
+      - destroy:
+          context: terraform
+          filters:
+            tags:
+              only: /.*/
+          requires:
+            - test

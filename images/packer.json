@@ -17,7 +17,7 @@
       "inline": [
         "sudo apt-get update",
         "sudo apt-get install -y nginx",
-        "echo \"<h1>Hello commit!</h1>\"| sudo tee /var/www/html/index.html",
+        "echo \"<h1>Hello commit!</h1><br/><h2> I'm a dev environment!</h2>\"| sudo tee /var/www/html/index.html",
         "sudo chown www-data: /var/www/html/index.html"
       ]
     }

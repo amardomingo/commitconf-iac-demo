@@ -12,8 +12,19 @@ Crea dos instancias de GCE y un balanceador HTTP usando el modulo de GoogleCloud
 
 Para ejecutarla:
 
-```
+```bash
 $> cd config
 $> terrafom init
 $> terraform apply
+```
+
+## Demo 2
+
+Igual que la demo anterior, pero añadiendo un nuevo entorno y parametrizando ciertos valores de configuración para reutilizar la configuración
+
+Además, añade un Makefile y un pipeline con circleci para probar los cambios que se realicen.
+
+Para ejecutarlas:
+```bash
+$> make clean init deploy
 ```

@@ -1,14 +1,14 @@
 resource "google_compute_instance" "frontend" {
-  name         = "demo-frontend-${count.index}"
-  count        = "2"
-  machine_type = "n1-standard-1"
-  zone         = "europe-west1-c"
+  name         = "${var.frontend_name}-${count.index}"
+  count        = "${var.frontend_count}"
+  machine_type = "${var.frontend_type}"
+  zone         = "${var.zone}"
 
-  tags = ["commitconf", "frontend"]
+  tags = "${var.frontend_tags}"
 
   boot_disk {
     initialize_params {
-      image = "commitconf-frontend-1542749301"
+      image = "${var.image_name}"
     }
   }
 
@@ -26,7 +26,7 @@ resource "google_compute_instance" "frontend" {
 }
 
 resource "google_compute_instance_group" "frontends" {
-  name        = "demo-frontend-servers"
+  name        = "${var.frontend_name}-servers"
   description = "Commit Conf terraform demo"
 
   instances = ["${google_compute_instance.frontend.*.self_link}"]
@@ -36,13 +36,13 @@ resource "google_compute_instance_group" "frontends" {
     port = "80"
   }
 
-  zone = "europe-west1-c"
+  zone = "${var.zone}"
 }
 
 module "gce-lb-http" {
   source            = "GoogleCloudPlatform/lb-http/google"
-  name              = "demo-frontend-http-lb"
-  region            = "europe-west1"
+  name              = "${var.frontend_name}-http-lb"
+  region            = "${var.region}"
   target_tags       = ["frontend"]
   backends          = {
     "0" = [
