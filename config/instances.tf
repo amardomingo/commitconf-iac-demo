@@ -55,6 +55,3 @@ module "gce-lb-http" {
   ]
 }
 
-output "lb-ip" {
-  value = "LB IP: ${module.gce-lb-http.external_ip}"
-}

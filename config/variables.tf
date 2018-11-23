@@ -16,11 +16,6 @@ variable zone {
   default     = "europe-west1-c"
 }
 
-variable create_bucket {
-  description = "Wether we should create the bucket for the tfstate" 
-  default     = "true"
-}
-
 /**
  * Frontend configuration.
  */
@@ -47,7 +42,6 @@ variable "image_name" {
   description = "The VM image to use for the frontend"
   default     = "commitconf-frontend-1542749301"  
 }
-
 
 variable frontend_tags {
   type        = "list"
