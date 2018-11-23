@@ -24,3 +24,6 @@ module "frontends" {
   network_name   = "demo"
 }
 
+output "lb-ip" {
+  value = "LB IP: ${module.frontends.lb-ip}"
+}
